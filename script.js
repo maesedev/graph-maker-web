@@ -1,164 +1,280 @@
-let valuesList = [];
+"use strict";
+let addQueue = [];
 let relationsList = [];
-let relationsOriginList = [];
-let counter = 1;
 
-//Función para eliminar relaciones
-function deleteRelation(id) {
-  valuesList.pop(id - counter); //elimina valor de la relación
-  relationsList.pop(id - counter); //elimina relación de donde viene
-  relationsOriginList.pop(id - counter); //elimina relación a donde llega
-  document.getElementById(`li-${id}`).remove();
-  document.getElementById("generarEnlacesBtn").click();
-  counter++;
-}
+let styles = {
+  input: "bg-slate-100 mx-5 py-1 px-2 text-center",
+  deletebtn: "bg-red-400 py-1 px-3 rounded-md hover:bg-red-500 ",
+  select: "w-40 bg-slate-200 p-1 rounded-md hover:bg-slate-300",
+};
 
-document.addEventListener("DOMContentLoaded", () => {
-  //Nombrando los elementos de la página html
-  const graficarBtn = document.getElementById("graficarBtn");
-  const generarEnlacesBtn = document.getElementById("generarEnlacesBtn");
-  const graficaContainer = document.getElementById("grafica");
-  const puntosLista = document.getElementById("puntosLista");
-  const buttonAdd = document.getElementById("buttonAdd");
-  const selectNodes = document.getElementById("selectNodes");
-  const deleteNode = document.getElementById("deleteNode");
-  const inputNodeName = document.getElementById("inputNodeName");
-  const nodes = new vis.DataSet();
-  const edges = new vis.DataSet();
-  const data = { nodes, edges };
-  const options = {};
+/* TODO:
+    1. ADD NODE function  
+    2. EDIT NODE function
+    3. DELETE NODE function 
+    4. Draw edges
+*/
 
-  let addIds = 0;
+let $canvas = document.getElementById("grafica");
 
-  const network = new vis.Network(graficaContainer, data, options);
+const nodes = new vis.DataSet();
+const edges = new vis.DataSet();
+const data = { nodes, edges };
+const options = {
+  autoResize: true,
+  interaction: { selectable: true },
+  edges: {
+    arrows: {
+      to: {
+        enabled: true,
+      },
+    },
+  },
+};
 
-  //Función para refrescar los select del formulario y de eliminar
-  function refresh() {
-    const lis = document.querySelectorAll(".li");
-    console.log(lis.length);
-    for (let i = 0; i < lis.length; i++) {
-      //Itera los elementos html con la clase "li"
-      const li = lis[i];
-      const liChildren = li.children;
-      const selectOrigin = liChildren[0];
-      const input = liChildren[1];
-      const select = liChildren[2];
+const network = new vis.Network($canvas, data, options);
+network.setOptions(options);
 
-      selectOrigin.innerHTML = "";
-      select.innerHTML = "";
-
-      //Refresca los elementos html de clase "li"
-      nodes.forEach((node) => {
-        selectOrigin.innerHTML += `<option value="${node.id}">Nodo ${node.id}</option>`;
-        select.innerHTML += `<option value="${node.id}">Nodo ${node.id}</option>`;
-      });
-
-      //Pone los valores anteriormente guardados
-      if (relationsList.length > 0 && i < lis.length - 1) {
-        input.value = valuesList[i];
-        select.value = relationsList[i];
-        selectOrigin.value = relationsOriginList[i];
-      }
-    }
-
-    selectNodes.innerHTML = "";
-
-    //Refresca los elemenos del select de borrar
-    nodes.forEach((item) => {
-      selectNodes.innerHTML += `<option value="${item.id}">Nodo ${item.id}</option>`;
-    });
-  }
-
-  //Función para añadir una relación
-  buttonAdd.addEventListener("click", () => {
-    addIds++;
-    const id = addIds;
-    puntosLista.innerHTML += `<li class="li" id="li-${id}"><select id="selectOrigin-${id}" value="${1}"></select> <input class="input" type="text" id="${id}" value="${1}" /> <select id="select-${id}" value="${1}"></select> <button onClick="deleteRelation(${id})">Delete Relation</button></li>`;
-    refresh();
-  });
-
-  //Función para añadir un nodo
-  graficarBtn.addEventListener("click", () => {
-    const id = inputNodeName.value;
-    if (id == "") return;
-
-    const color = "#5FDABD";
-
-    try {
-      nodes.add({
-        id,
-        label: id.toString(),
-        color: color,
-        font: { color: "white" },
-      });
-    } catch {
-      alert("El nodo ya existe!");
-      inputNodeName.value = "";
-      return;
-    }
-
-    buttonAdd.disabled = false;
-
-    refresh();
-    inputNodeName.value = "";
-  });
-
-  //Función para eliminar un nodo
-  deleteNode.addEventListener("click", () => {
-    const lis = document.querySelectorAll(".li");
-    lis.forEach((li) => {
-      const id = parseInt(li.id.slice(3));
-      const selectOrigin = document.getElementById(`selectOrigin-${id}`).value;
-      const selectDestination = document.getElementById(`select-${id}`).value;
-      if (
-        selectNodes.value == selectOrigin ||
-        selectNodes.value == selectDestination
-      ) {
-        deleteRelation(id);
-      }
-    });
-    nodes.remove(selectNodes.value);
-    refresh();
-    const lastLi = document.getElementById(`li-${lis.length}`);
-    const lastLiChildren = lastLi.children;
-    lastLiChildren[0].value =
-      relationsOriginList[relationsOriginList.length - 1];
-    lastLiChildren[1].value = valuesList[valuesList.length - 1];
-    lastLiChildren[2].value = relationsList[relationsList.length - 1];
-  });
-
-  //Función para generar los enlaces entre nodos con el formulario
-  generarEnlacesBtn.addEventListener("click", () => {
-    //Reinicia todas las relaciones
-    relationsList = [];
-    relationsOriginList = [];
-    valuesList = [];
-    edges.clear();
-    const inputs = puntosLista.querySelectorAll(".input"); //Obtiene todas las entradas del formulario
-    inputs.forEach((input) => {
-      //Itera en  cada entrada
-      const valor = input.value; //Obtiene el valor de la relación obtenida en el formulario
-      const origin = document.getElementById(`selectOrigin-${input.id}`); //Obtiene el nodo del que sale la relación
-      const originValue = origin.value;
-      const destination = document.getElementById(`select-${input.id}`); //Obtiene el nodo al que llega la relación
-      const destinationValue = destination.value;
-      if (valor !== "") {
-        //Valida que el input no esté vacio
-        valuesList.push(valor); //Introduce el valor de la relación a la lista de valores
-        relationsList.push(destinationValue); //Introduce el nodo al que llega a la lista
-        relationsOriginList.push(originValue); //Introduce el nodo del que sale a la lista
-        edges.add({
-          //Crea la relación
-          from: originValue,
-          to: destinationValue,
-          label: valor,
-          arrows: {
-            to: {
-              enabled: true,
-            },
-          },
-        });
-      }
-    });
+// Prevent default
+document.querySelectorAll("form button").forEach((item) => {
+  item.addEventListener("click", (e) => {
+    e.preventDefault();
   });
 });
+
+$canvas.addEventListener("click",()=>{
+  console.log(network.getSelectedEdges().length);
+
+  if(network.getSelectedEdges().length > 0 ){
+    document.getElementById("deleteRelationButton").disabled = false
+  }
+  else   document.getElementById("deleteRelationButton").disabled = true
+
+})
+
+
+
+function ActiveButton(action, value = true) {
+  if (action == "edit")
+    document.querySelector("button[action='edit']").disabled = !value;
+  if (action == "delete")
+    document.querySelector("button[action='delete']").disabled = !value;
+  if (action == "addRelation")
+    document.querySelector("button[action='addRelation']").disabled = !value;
+  if (action == "deleteRelation")
+    document.querySelector("button[action='deleteRelation']").disabled = !value;
+}
+
+
+
+function AddNode(idparam = undefined) {
+  let $nodeNameInput = document.querySelector("input[name='node-name']");
+  let id = idparam ?? $nodeNameInput.value;
+  if (!id) return alert("Agrega un valor al nombre");
+
+  try {
+    nodes.add({
+      id,
+      label: id.toString(),
+      color: "#5FDABD",
+      font: { color: "white" },
+    });
+
+    relationsList.forEach((item) => item.push(undefined));
+    relationsList.push([]);
+    for (let i = 0; i < relationsList.length; i++) {
+      relationsList[relationsList.length - 1].push(undefined);
+    }
+
+    addQueue.push(id);
+    ActiveButton("edit");
+    ActiveButton("delete");
+    ActiveButton("addRelation");
+    UpdateSelects();
+  } catch {
+    alert("El nodo ya existe!");
+    inputNodeName.value = "";
+    return;
+  }
+
+  $nodeNameInput.value = "";
+}
+
+function EditNode() {
+  const NodeId = document.getElementById("edit-select-node").value;
+  const NewName = document.getElementById("editInputNodeName").value;
+  
+
+  let index = addQueue.indexOf(NodeId);
+
+  let yArray = [...relationsList].splice(index, 1);
+
+  let xArray = [];
+  let copy = [...relationsList];
+
+  for (let i = 0; i < copy.length; i++) {
+    xArray.push(copy[i][index]);
+  }
+
+  relationsList.slice(index, 1);
+  relationsList.push(...relationsList.splice(index, 1));
+  relationsList.forEach((item, i) => {
+    item.push(...item.splice(index, 1));
+  });
+ 
+  addQueue.splice(index,1)
+  addQueue.push(NewName)
+
+  nodes.remove(NodeId)
+  AddNode(NewName)
+  DrawRelations()
+  
+  
+}
+
+function DeleteNode(id = undefined) {
+  let NodeId = id ?? document.getElementById("deleteSelectNodes").value
+  
+  let indexInQueue = addQueue.indexOf(NodeId);
+  relationsList.splice(indexInQueue, 1);
+
+  relationsList.forEach((arr) => arr.splice(indexInQueue, 1));
+  nodes.remove(NodeId)
+  addQueue = addQueue.filter( item => item != NodeId);
+
+  if(addQueue.length === 0){
+    ActiveButton("edit", false)
+    ActiveButton("addRelation", false)
+    ActiveButton("delete", false)
+    showDeleteNodeModal()
+  }
+
+  DrawRelations();
+  UpdateSelects();
+}
+
+
+function AddRelation() {
+  let from = document.getElementById("from-relation").value;
+  let to = document.getElementById("to-relation").value;
+  let value = document.getElementById("adding-relation-name").value;
+
+  if (!value) return alert("Por favor ingresa un valor valido en valor");
+  //alt 789 -> "§"
+  edges.add({ from, to, label: value , id:`${from}§${to}`});
+
+  let indexInQueueFrom = addQueue.indexOf(from);
+  let indexInQueueto = addQueue.indexOf(to);
+
+  relationsList[indexInQueueFrom][indexInQueueto] = value;
+}
+
+function DeleteRelation(){
+
+  const SelectedEdges = network.getSelectedEdges()
+  
+  if(SelectedEdges.length < 0 ) return document.getElementById("deleteRelationButton").disabled = true
+  const  [from, to] = SelectedEdges[0].split("§")
+
+  let fromIndex = addQueue.indexOf(from)
+  let toIndex = addQueue.indexOf(to)
+
+  relationsList[fromIndex][toIndex] = undefined
+
+  network.deleteSelected()
+
+}
+
+function DrawRelations() {
+  edges.clear();
+  for (let y in relationsList) {
+    for (let x in relationsList[y]) {
+      if (!relationsList[x][y]) continue;
+
+      edges.add({
+        from: addQueue[x],
+        to: addQueue[y],
+        label: relationsList[x][y],
+      });
+    }
+  }
+}
+
+
+function UpdateSelects() {
+  let dataSet = nodes.getDataSet().getIds();
+  let $selects = document.querySelectorAll("select[data='nodes']");
+
+  $selects.forEach(($select) => {
+    $select.innerHTML = "";
+    for (let data of dataSet) {
+      $select.innerHTML += `<option value="${data}">Nodo ${data}</option>`;
+    }
+  });
+}
+
+
+
+// [add, edit, delete, addRelation,delRelation]
+let visible = [0, 0, 0, 0, 0 ];
+let actionsbuttons = document.querySelector(".actions").children;
+
+function showAddNodeModal() {
+  let actions = document.querySelector(".modals").children;
+  //visible
+  if (visible[0]) {
+    actions[0].classList.add("hidden");
+    visible = [0, 0, 0, 0 ];
+    return;
+  }
+  actions[0].classList.remove("hidden");
+  actions[1].classList.add("hidden");
+  actions[2].classList.add("hidden");
+  actions[3].classList.add("hidden");
+  visible = [1, 0, 0, 0];
+}
+function showEditNodeModal() {
+  let actions = document.querySelector(".modals").children;
+  //visible
+  if (visible[1]) {
+    actions[1].classList.add("hidden");
+    visible = [0, 0, 0, 0];
+    return;
+  }
+  actions[0].classList.add("hidden");
+  actions[1].classList.remove("hidden");
+  actions[2].classList.add("hidden");
+  actions[3].classList.add("hidden");
+  visible = [0, 1, 0 , 0];
+}
+
+function showDeleteNodeModal() {
+  let actions = document.querySelector(".modals").children;
+  //visible
+  if (visible[2]) {
+    visible = [0, 0, 0,0];
+    actions[2].classList.add("hidden");
+    return;
+  }
+  actions[0].classList.add("hidden");
+  actions[1].classList.add("hidden");
+  actions[2].classList.remove("hidden");
+  actions[3].classList.add("hidden");
+  visible = [0, 0, 1, 0];
+}
+
+
+function showAddRelationModal(){
+  let actions = document.querySelector(".modals").children;
+  //visible
+  if (visible[3]) {
+    visible = [0, 0, 0, 0];
+    actions[3].classList.add("hidden");
+    return;
+  }
+  actions[0].classList.add("hidden");
+  actions[1].classList.add("hidden");
+  actions[2].classList.add("hidden");
+  actions[3].classList.remove("hidden");
+  visible = [0, 0, 0 , 1];
+}

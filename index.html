@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+            },
+          },
+        },
+      };
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <title>Home | graph pro web maker</title>
+  </head>
+
+  <body>
+    <header
+      class="shadow-lg py-1 mb-5 bg-pink-900 text-white font-md sticky top-0"
+    >
+      <div class="caja">
+        <nav class="flex justify-between md:px-48 px-5">
+          <h1 class="flex gap-3 text-center font-bold text-lg py-3">
+            <svg
+              class="w-5"
+              fill="#ffffff"
+              version="1.1"
+              id="Capa_1"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 60 60"
+              xml:space="preserve"
+              stroke="#ffffff"
+            >
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M53,41V29H31V19h7V3H22v16h7v10H7v12H0v16h16V41H9V31h20v10h-7v16h16V41h-7V31h20v10h-7v16h16V41H53z M24,5h12v12H24V5z M14,55H2V43h12V55z M36,55H24V43h12V55z M58,55H46V43h12V55z"
+                ></path>
+              </g>
+            </svg>
+            <a href="/">MODELA TUS GRAFOS</a>
+          </h1>
+          <ul class="menu flex justify-center gap-10 items-center">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="graph.html">Grafos</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="sm:px-10">
+        <img src="./images/usa.png" class="max-w-96 m-auto" alt="">
+        <h1 class="font-semibold text-2xl text-center my-20">Trabajo Realizado por <b>Santiago Garzon</b></h1>
+        <h1 class="text-bold text-2xl text-center my-20">Estructuras de datos no lineales</h1>
+        <h1 class="text-bold text-2xl text-center my-20">Profesor Tellez</h1>
+        <h1 class="text-bold text-2xl text-center my-20">Marzo de 2024</h1>
+        <div class="text-center text-xl text-sky-700 mb-20 hover:underline">
+          <a class="flex justify-center gap-x-2" href="/graph.html" >
+            <span>Ir a la herramienta de grafos</span>
+            <svg  class="w-8 rotate-[-45deg] stroke-slate-700" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M13 10V8.5C13 7.67157 12.3284 7 11.5 7V7C10.6716 7 10 7.67157 10 8.5V11M13 11V9.5C13 8.67157 13.6716 8 14.5 8V8C15.3284 8 16 8.67157 16 9.5V10M7 11.5V4.5C7 3.67157 7.67157 3 8.5 3V3C9.32843 3 10 3.67157 10 4.5V11M10 12V11M7 14V11.5C7 10.6716 6.32843 10 5.5 10V10C4.67157 10 4 10.6716 4 11.5V13.5C4 16 5.5 21 11.5 21C14 21 19 19.5 19 13.5V12C19 10.8954 18.1046 10 17 10H16M16 10V12" stroke="#000000" stroke-linecap="round" stroke-width="2"></path></g></svg>
+          </a>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
