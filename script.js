@@ -2,11 +2,8 @@
 let addQueue = [];
 let relationsList = [];
 
-let styles = {
-  input: "bg-slate-100 mx-5 py-1 px-2 text-center",
-  deletebtn: "bg-red-400 py-1 px-3 rounded-md hover:bg-red-500 ",
-  select: "w-40 bg-slate-200 p-1 rounded-md hover:bg-slate-300",
-};
+
+
 
 /* TODO:
     1. ADD NODE function  
@@ -22,6 +19,9 @@ const edges = new vis.DataSet();
 const data = { nodes, edges };
 const options = {
   autoResize: true,
+  nodes:{
+    shape:"circle",
+  },
   interaction: { selectable: true },
   edges: {
     arrows: {
